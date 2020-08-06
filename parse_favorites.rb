@@ -8,12 +8,14 @@ doc = Nokogiri::HTML(open(uri))
 doc.css('script, link').each { |node| node.remove }
 formatted = doc.css('body')
 
-
-headers_regex = /^(\s{8}\w)/
-titles_regex = /^(\s{12}\w)/
 folder = []
+folder_level = 0
 formatted.to_s.split(/\n/) do |line|
-  puts line.scan(/>\w.*</).join.gsub(/(>|<)/, "") if line.include?("last_modified")
+  if line.include?("H3")
+    folder << line.scan(/>\w.*</).join.gsub(/(>|<)/, "")
+    2.times { next }
+    folder << line.scan(/>\w.*</).join.gsub(/(>|<)/, "") until line.include?("dl><p")
+  end
 end
 
 puts folder
